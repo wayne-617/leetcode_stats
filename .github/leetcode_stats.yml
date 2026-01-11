@@ -1,0 +1,37 @@
+name: Daily LeetCode Snapshot
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install playwright
+          playwright install chromium
+
+      - name: Take LeetCode progress screenshot
+        env:
+          LEETCODE_USERNAME: wayne617
+        run: |
+          python scripts/screenshot_leetcode.py
+
+      - name: Upload screenshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: leetcode-progress
+          path: output/leetcode_progress.png
